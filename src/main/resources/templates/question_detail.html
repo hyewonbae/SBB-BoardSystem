@@ -1,0 +1,136 @@
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container my-3">
+
+	<h1>Question Detail</h1>
+	<table class="table table-hover">
+		<tbody>
+			<tr>
+				<th> 번 호 </th>
+				<td th:text="${question.id}"></td>
+			</tr>
+			<tr>
+				<th> 제 목 </th>
+				<td th:text="${question.subject}"></td>
+			</tr>
+			<tr>
+				<th> 작 성 자 </th>
+				<td>
+					<span th:if="${question.author != null}" th:text="${question.author.username}"></span>
+				</td>
+			</tr>
+			<tr>
+				<th> 내 용 </th>
+				<td th:text="${question.content}"></td>
+			</tr>
+			<tr>
+				<th> 작 성 일 시 </th>
+				<td th:text="${question.createDate}"></td>
+			</tr>
+			<tr>
+				<th> 수 정 일 시 </th>
+				<td th:text="${question.modifyDate}"></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div class="text-right">
+		<a	class="recommend btn btn-secondary"
+		 	th:href="@{|/question/vote/${question.id}|}"
+			sec:authorize="isAuthenticated()">
+			추 천
+			<span class="badge" th:text="${#lists.size(question.voter)}"></span>
+		</a>
+		<a	class="btn btn-info"
+		 	th:href="@{|/question/modify/${question.id}|}"
+			sec:authorize="isAuthenticated()"
+			th:if="${question.author != null
+						and #authentication.getPrincipal().getUsername()
+								== question.author.username}"> 수 정 </a>
+		<a	class="delete btn btn-danger"
+			href="javascript:void(0);"
+			th:data-uri="@{|/question/delete/${question.id}|}"
+			sec:authorize="isAuthenticated()"
+			th:if="${question.author != null
+						and #authentication.getPrincipal().getUsername()
+								== question.author.username}"> 삭 제 </a>
+	</div>
+
+	<h5 th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
+
+	<div class="card my-3" th:each="answer : ${question.answerList}">
+		<div class="card-body">
+			<div class="card-text" th:text="${answer.content}"></div>
+			<div class="d-flex justify-content-end">
+				<div class="badge bg-primary text-light mr-1 py-2" th:if="${answer.author != null}">
+					<div> 작 성 자 </div>
+					<div th:text="${answer.author.username}"></div>
+				</div>
+				<div class="badge bg-secondary text-light mr-1 py-2" th:if="${answer.modifyDate != null}">
+					<div> 수 정 일 시 </div>
+					<div th:text="${#temporals.format(answer.modifyDate, 'yyyy-MM-dd HH:mm')}"></div>
+				</div>
+				<div class="badge bg-secondary text-light mr-1 py-2">
+					<div> 작 성 일 시 </div>
+					<div th:text="${#temporals.format(answer.createDate, 'yyyy-MM-dd HH:mm')}"></div>
+				</div>
+			</div>
+			<div><!-- 답변 수정 삭제 버튼 영역 -->
+				<a	class="recommend btn btn-sm btn-secondary"
+				 	th:href="@{|/answer/vote/${answer.id}|}"
+					sec:authorize="isAuthenticated()">
+					추 천
+					<span class="badge" th:text="${#lists.size(answer.voter)}"></span>
+				</a>
+				<a	class="btn btn-sm btn-success"
+				 	th:href="@{|/answer/modify/${answer.id}|}"
+					sec:authorize="isAuthenticated()"
+					th:if="${answer.author != null
+								and #authentication.getPrincipal().getUsername()
+										== answer.author.username}"> 수 정 </a>
+				<a	class="delete btn btn-sm btn-warning"
+					href="javascript:void(0);"
+					th:data-uri="@{|/answer/delete/${answer.id}|}"
+					sec:authorize="isAuthenticated()"
+					th:if="${answer.author != null
+								and #authentication.getPrincipal().getUsername()
+										== answer.author.username}"> 삭 제 </a>
+			</div>
+		</div>
+	</div>
+
+	<form th:action="@{|/answer/create/${question.id}|}" th:object="${answerForm}" method="post">
+		<div th:replace="~{form_errors :: formErrorsFragment}"></div>
+
+		<textarea sec:authorize="isAnonymous()" disabled th:field="*{content}" rows="15" cols="150"></textarea>
+		<textarea sec:authorize="isAuthenticated()" th:field="*{content}" rows="15" cols="150"></textarea>
+
+		<input type="submit" value="답변 등록">
+	</form>
+
+</div> <!-- end of layout:fragment="content" -->
+
+<script layout:fragment="script" type="text/javascript">
+	const delete_emements = document.getElementsByClassName("delete");
+
+	Array.from(delete_emements)
+			.forEach(function(element){
+				element.addEventListener('click', function(){
+					if(confirm('정말 삭제 하시겠습니까?')) {
+						location.href=this.dataset.uri;
+					}
+				});
+			}); // forEach
+
+	const recommend_emements = document.getElementsByClassName("recommend");
+
+	Array.from(recommend_emements)
+			.forEach(function(element){
+				element.addEventListener('click', function(){
+					if(confirm('정말 추천 하시겠습니까?')) {
+						location.href=this.dataset.uri;
+					}
+				});
+			}); // forEach
+</script>
+
+</html>

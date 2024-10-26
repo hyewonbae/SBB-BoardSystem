@@ -1,0 +1,15 @@
+<nav th:fragment="navbarFragment" class="navbar navbar-expand-sm bg-dark navbar-dark">
+  <!-- Brand -->
+  <a class="navbar-brand" href="/">SBB</a>
+
+  <!-- Links -->
+  <ul class="navbar-nav">
+    <li class="nav-item">
+      <a class="nav-link" sec:authorize="isAnonymous()" th:href="@{/user/login}"> 로 그 인 </a>
+      <a class="nav-link" sec:authorize="isAuthenticated()" th:href="@{/user/logout}"> 로 그 아 웃 </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" th:href="@{/user/signup}"> 회 원 가 입 </a>
+    </li>   
+  </ul>
+</nav>

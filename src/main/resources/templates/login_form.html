@@ -1,0 +1,35 @@
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container my-3">
+
+	<h1>Log In</h1>
+	<form th:action="@{/user/login}" method="post">
+
+		<div th:if="${param.error}">
+			<div class="alert alert-danger">
+				ID 또는 비밀번호가 올바르지 않습니다.
+			</div>
+		</div>
+
+		<table class="table table-hover">
+			<tbody>
+				<tr>
+					<th> 사 용 자 I D </th>
+					<td>
+						<input type="text" id="username" name="username" class="form-control">
+					</td>
+				</tr>
+				<tr>
+					<th> 비 밀 번 호 </th>
+					<td>
+						<input type="text" id="password" name="password" class="form-control">
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="text-right">
+			<input type="submit" value=" 로 그 인 " class="btn btn-primary">
+		</div>
+	</form>
+
+</div>
+</html>
